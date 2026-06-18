@@ -1,11 +1,310 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Geometric Entropy</title>
+    <meta
+      name="description"
+      content="Project page for Geometric Entropy: When Trajectory Diversity Helps and Hurts in Imitation Learning."
+    />
+    <link rel="canonical" href="https://geometric-entropy.github.io/" />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>Geometric Entropy</h1>
-    <p>Project page coming soon.</p>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Geometric Entropy home">Geometric Entropy</a>
+      <nav aria-label="Primary navigation">
+        <a href="#abstract">Abstract</a>
+        <a href="#idea">Idea</a>
+        <a href="#simulation">Simulation</a>
+        <a href="#real-robot">Real Robot</a>
+        <a href="#citation">BibTeX</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero section-wrap">
+        <p class="venue">IROS 2026</p>
+        <h1>Geometric Entropy: When Trajectory Diversity Helps and Hurts in Imitation Learning</h1>
+
+        <p class="authors">
+          <a href="https://qianqianlo.github.io/" target="_blank" rel="noopener">Qian Luo</a><sup>1,2</sup>,
+          <a href="https://zrllrz.github.io/" target="_blank" rel="noopener">Ruizhe Liu</a><sup>1</sup>,
+          <a href="https://openreview.net/profile?id=~Pei_Zhou2" target="_blank" rel="noopener">Pei Zhou</a><sup>1,2</sup>,
+          <a href="https://zhouxunzhe.github.io/" target="_blank" rel="noopener">Xunzhe Zhou</a><sup>1,2</sup>,
+          and
+          <a href="https://yanchaoyang.github.io/" target="_blank" rel="noopener">Yanchao Yang</a><sup>1,2</sup>
+        </p>
+
+        <p class="affiliations">
+          <span><sup>1</sup>The University of Hong Kong</span>
+          <span><sup>2</sup>Transcengram</span>
+        </p>
+
+        <div class="logo-strip" aria-label="Affiliation logos">
+          <img class="hku-logo" src="assets/logos/hku_logo.jpg" alt="The University of Hong Kong logo" />
+          <img class="transcengram-logo" src="assets/logos/transcengram_logo.png" alt="Transcengram logo" />
+        </div>
+
+        <div class="button-row" aria-label="Project links">
+          <a class="button primary" href="assets/paper/geometric_entropy_iros2026.pdf">Paper PDF</a>
+          <a class="button" href="#videos">Videos</a>
+          <a class="button" href="#citation">BibTeX</a>
+          <span class="button disabled" aria-disabled="true">Code coming soon</span>
+        </div>
+
+        <figure class="teaser-figure">
+          <img
+            src="assets/figures/trajectory_r_schematic_v2.png"
+            alt="Trajectory manifolds expanding from low diversity to balanced diversity and high ambiguity."
+          />
+          <figcaption>
+            Geometric diversity helps only up to the learner's current tolerance for strategy ambiguity.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="abstract" class="section-wrap text-section">
+        <h2>Abstract</h2>
+        <p>
+          We study how trajectory-shape diversity in demonstrations affects imitation learning
+          performance across models, tasks, and data scales. We introduce
+          <span class="math">H<sub>G</sub></span>, a task-agnostic metric that quantifies
+          intrinsic diversity of transit trajectories after normalizing away extrinsic variation
+          such as goal pose and workspace scale. Across multiple IL architectures and both
+          simulated and real-robot contact-rich manipulation tasks, success follows an
+          inverted-U pattern: increasing geometric diversity improves robustness in
+          low-diversity regimes, but degrades performance once diversity induces strategy
+          ambiguity.
+        </p>
+        <p>
+          The optimal entropy shifts lower as task mastery increases through more data, easier
+          tasks, or stronger model priors. For a pretrained VLA, the trend becomes effectively
+          monotonic decreasing, suggesting that <span class="math">H<sub>G</sub></span> can act
+          as a fast pre-training audit for calibrating demonstrations toward the learnable
+          regime.
+        </p>
+      </section>
+
+      <section id="idea" class="section-wrap">
+        <div class="section-heading">
+          <p class="eyebrow">Core Idea</p>
+          <h2>More diverse demonstrations help only while the policy can disambiguate them.</h2>
+        </div>
+        <div class="principle-grid four">
+          <article class="principle-card metric-card">
+            <span class="tag">Metric</span>
+            <h3>Geometric Entropy</h3>
+            <p>
+              <span class="math">H<sub>G</sub></span> measures trajectory-shape diversity after
+              target-frame alignment, focusing on motion geometry rather than extrinsic pose.
+            </p>
+          </article>
+          <article class="principle-card mastery-card">
+            <span class="tag">Definition</span>
+            <h3>Task mastery</h3>
+            <p>
+              Task mastery is the learner's current proficiency on a task, shaped by model
+              capacity, dataset size, task difficulty, and pretrained priors.
+            </p>
+          </article>
+          <article class="principle-card help-card">
+            <span class="tag">Low mastery</span>
+            <h3>Diversity helps</h3>
+            <p>Additional geometric coverage improves recovery when demonstrations are too narrow.</p>
+          </article>
+          <article class="principle-card hurt-card">
+            <span class="tag">High mastery</span>
+            <h3>Diversity hurts</h3>
+            <p>Once the motion corridor is already learnable, extra modes mostly add ambiguity.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="simulation" class="section-wrap">
+        <div class="section-heading compact-heading">
+          <p class="eyebrow">Simulation Evidence</p>
+          <h2>Success peaks where diversity is useful but still learnable.</h2>
+          <p>
+            StackCube illustrates the inverted-U effect, while PegInsertion reaches a higher-mastery
+            regime where added diversity turns into interference earlier.
+          </p>
+        </div>
+
+        <div class="result-grid">
+          <article class="result-panel">
+            <div class="panel-copy">
+              <h3>StackCube: inverted-U</h3>
+              <p>
+                Low entropy is brittle, moderate entropy improves robustness, and high entropy
+                mixes incompatible strategies.
+              </p>
+            </div>
+            <figure class="plot-card">
+              <img src="assets/figures/dp_stack.png" alt="Diffusion Policy StackCube success rate versus Geometric Entropy." />
+              <figcaption>Diffusion Policy on StackCube.</figcaption>
+            </figure>
+          </article>
+
+          <article class="result-panel">
+            <div class="panel-copy">
+              <h3>PegInsertion: high mastery</h3>
+              <p>
+                Consistent low-entropy demonstrations already cover the narrow insertion corridor,
+                so extra geometric variation primarily adds interference.
+              </p>
+            </div>
+            <figure class="plot-card">
+              <img src="assets/figures/dp_peg.png" alt="Diffusion Policy PegInsertion success rate versus Geometric Entropy." />
+              <figcaption>Diffusion Policy on PegInsertion.</figcaption>
+            </figure>
+          </article>
+        </div>
+
+        <div id="videos" class="video-grid five">
+          <article class="video-card fail">
+            <video src="assets/videos/stack_r_001_k_0_fail.mp4" poster="assets/videos/posters/stack_r_001_k_0_fail.jpg" autoplay muted loop playsinline controls></video>
+            <div class="video-copy">
+              <span class="status">Stack low <b>&middot;</b> fail</span>
+              <h3>Too narrow</h3>
+            </div>
+          </article>
+          <article class="video-card success">
+            <video src="assets/videos/stack_r_003_k_0_success.mp4" poster="assets/videos/posters/stack_r_003_k_0_success.jpg" autoplay muted loop playsinline controls></video>
+            <div class="video-copy">
+              <span class="status">Stack mid <b>&middot;</b> success</span>
+              <h3>Best trade-off</h3>
+            </div>
+          </article>
+          <article class="video-card fail">
+            <video src="assets/videos/stack_r_010_k_0_fail.mp4" poster="assets/videos/posters/stack_r_010_k_0_fail.jpg" autoplay muted loop playsinline controls></video>
+            <div class="video-copy">
+              <span class="status">Stack high <b>&middot;</b> fail</span>
+              <h3>Too ambiguous</h3>
+            </div>
+          </article>
+          <article class="video-card success">
+            <video src="assets/videos/peg_r_001_k_0_success.mp4" poster="assets/videos/posters/peg_r_001_k_0_success.jpg" autoplay muted loop playsinline controls></video>
+            <div class="video-copy">
+              <span class="status">Peg low <b>&middot;</b> success</span>
+              <h3>Consistent</h3>
+            </div>
+          </article>
+          <article class="video-card fail">
+            <video src="assets/videos/peg_r_005_k_0_fail.mp4" poster="assets/videos/posters/peg_r_005_k_0_fail.jpg" autoplay muted loop playsinline controls></video>
+            <div class="video-copy">
+              <span class="status">Peg high <b>&middot;</b> fail</span>
+              <h3>Interference</h3>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-wrap">
+        <div class="evidence-grid">
+          <article class="evidence-panel">
+            <div>
+              <p class="eyebrow">Model Priors</p>
+              <h2><span class="math">&pi;<sub>0.5</sub></span> shifts the useful diversity range left.</h2>
+              <p>
+                We fine-tune the Physical Intelligence <span class="math">&pi;<sub>0.5</sub></span>
+                VLA on StackCube-v1. Its pretrained priors induce a high-mastery regime where
+                added trajectory-shape diversity becomes redundant or conflicting.
+              </p>
+            </div>
+            <figure class="plot-card">
+              <img src="assets/figures/vla_stack.png" alt="pi0.5 VLA StackCube success rate versus Geometric Entropy." />
+            </figure>
+          </article>
+          <article class="evidence-panel">
+            <div>
+              <p class="eyebrow">Fast Audit</p>
+              <h2><span class="math">H<sub>G</sub></span> stabilizes with practical sample sizes.</h2>
+              <p>
+                The metric converges quickly enough to audit a pilot collection before training
+                a policy, making it useful for data curation rather than only post-hoc analysis.
+              </p>
+            </div>
+            <figure class="plot-card">
+              <img src="assets/figures/stack_cube_entropy.png" alt="Geometric Entropy convergence curves on StackCube." />
+            </figure>
+          </article>
+        </div>
+      </section>
+
+      <section id="real-robot" class="section-wrap">
+        <div class="section-heading compact-heading">
+          <p class="eyebrow">Real Robot Validation</p>
+          <h2>The same entropy-mastery behavior appears on hardware.</h2>
+          <p>
+            ACT policies are evaluated on an ARX arm across StackCube, PlacePanda, and OpenDrawer.
+          </p>
+        </div>
+        <div class="result-grid robot-grid">
+          <figure class="plot-card">
+            <img src="assets/figures/real_robot_res.png" alt="Real robot success rate versus Geometric Entropy for StackCube, PlacePanda, and OpenDrawer." />
+            <figcaption>Real-world success rate versus <span class="math">H<sub>G</sub></span>.</figcaption>
+          </figure>
+          <div class="video-grid hardware">
+            <article class="video-card">
+              <video src="assets/videos/ARX_stackcube.mp4" poster="assets/videos/posters/ARX_stackcube.jpg" autoplay muted loop playsinline controls></video>
+              <div class="video-copy">
+                <span class="status">ARX</span>
+                <h3>StackCube</h3>
+              </div>
+            </article>
+            <article class="video-card">
+              <video src="assets/videos/ARX_placepanda.mp4" poster="assets/videos/posters/ARX_placepanda.jpg" autoplay muted loop playsinline controls></video>
+              <div class="video-copy">
+                <span class="status">ARX</span>
+                <h3>PlacePanda</h3>
+              </div>
+            </article>
+            <article class="video-card">
+              <video src="assets/videos/ARX_opendrawer.mp4" poster="assets/videos/posters/ARX_opendrawer.jpg" autoplay muted loop playsinline controls></video>
+              <div class="video-copy">
+                <span class="status">ARX</span>
+                <h3>OpenDrawer</h3>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="metric" class="section-wrap metric-section">
+        <div class="section-heading compact-heading">
+          <p class="eyebrow">Metric Robustness</p>
+          <h2>Common diversity proxies miss the geometry that matters.</h2>
+          <p>
+            Mean variance, covariance volume, effective rank, and local-density entropy can alias
+            distinct strategy organizations or drift with sample size. <span class="math">H<sub>G</sub></span>
+            combines shape-mode dimensionality with spread in aligned trajectory space.
+          </p>
+        </div>
+        <figure class="plot-card wide">
+          <img src="assets/figures/baseline_compare.png" alt="Comparison of baseline diversity metrics on StackCube." />
+          <figcaption>Baseline metrics can mis-order learning-relevant trajectory diversity.</figcaption>
+        </figure>
+      </section>
+
+      <section id="citation" class="section-wrap citation-section">
+        <div class="section-heading compact-heading">
+          <p class="eyebrow">Citation</p>
+          <h2>BibTeX</h2>
+        </div>
+        <pre><code>@inproceedings{luo2026geometricentropy,
+  title     = {Geometric Entropy: When Trajectory Diversity Helps and Hurts in Imitation Learning},
+  author    = {Luo, Qian and Liu, Ruizhe and Zhou, Pei and Zhou, Xunzhe and Yang, Yanchao},
+  booktitle = {IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+  year      = {2026}
+}</code></pre>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Geometric Entropy &middot; IROS 2026</p>
+      <a href="#top">Back to top</a>
+    </footer>
   </body>
 </html>
